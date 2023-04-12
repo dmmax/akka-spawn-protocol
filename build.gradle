@@ -1,0 +1,36 @@
+plugins {
+    id 'java'
+    id 'java-library'
+    id 'ru.vyarus.github-info' version '1.5.0'
+}
+
+sourceCompatibility = 1.8
+
+group = 'me.dmmax'
+description = 'Using Spawn Protocol for Akka Actors in any nested level of actors hierarchy'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    gradlePluginPortal()
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply from: "$rootDir/gradle/versions.gradle"
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+
+    test {
+        useJUnitPlatform()
+    }
+}
+
+github {
+    user 'dmmax'
+    license 'MIT'
+}

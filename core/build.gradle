@@ -1,0 +1,13 @@
+dependencies {
+
+    implementation(
+            "com.typesafe.akka:akka-actor-typed_2.12:${versions.akka}"
+    )
+
+    testImplementation(
+            "org.junit.jupiter:junit-jupiter-api:${versions.jupiter}"
+    )
+    testRuntimeOnly(
+            "org.junit.jupiter:junit-jupiter-engine:${versions.jupiter}"
+    )
+}
