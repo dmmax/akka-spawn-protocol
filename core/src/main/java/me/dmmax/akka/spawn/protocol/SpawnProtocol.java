@@ -46,7 +46,7 @@ public class SpawnProtocol<P> {
    */
   public <C> ActorRef<C> createActor(SpawnActorInfo<C> childActorInfo, Duration askTimeout) {
     Function<ActorRef<AskSpawnResponse<C>>, P> messageFactory = actorRef -> {
-      SpawnActorCommand<C> spawnChildActorCommand = new SpawnActorCommand<>(actorRef, childActorInfo);
+      SpawnActor<C> spawnChildActorCommand = new SpawnActor<>(actorRef, childActorInfo);
       return spawnCommandConverter.toActorSpawnMessage(spawnChildActorCommand);
     };
     return AskPattern.ask(
