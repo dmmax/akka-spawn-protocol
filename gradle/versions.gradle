@@ -1,5 +1,6 @@
 // Versions of libraries which are in use within the modules
 ext.versions = [
         akka   : '2.6.20',
-        jupiter: '5.8.1'
+        jupiter: '5.8.1',
+        assertJ: '3.24.2'
 ]
