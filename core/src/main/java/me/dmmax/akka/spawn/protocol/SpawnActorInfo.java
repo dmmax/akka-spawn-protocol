@@ -45,9 +45,9 @@ public class SpawnActorInfo<T> {
   }
 
   /**
-   * Returns – name of the actor to spawn.
+   * Returns – creation strategy of the actor to spawn.
    *
-   * @return – name of the actor to spawn
+   * @return – creation strategy of the actor to spawn
    */
   public ActorCreationStrategy creationStrategy() {
     return creationStrategy;
