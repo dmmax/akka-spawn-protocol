@@ -11,27 +11,27 @@ import akka.actor.typed.Props;
 public class SpawnActorInfo<T> {
 
   private final Behavior<T> behavior;
-  private final String actorName;
+  private final ActorCreationStrategy creationStrategy;
   private final Props props;
 
   /**
    * The {@link Props#empty()} will be used for spawning the actor.
    *
    * @param behavior – behavior of the actor to spawn
-   * @param actorName – name of the actor to spawn
+   * @param creationStrategy – creation strategy of the actor to spawn
    */
-  public SpawnActorInfo(Behavior<T> behavior, String actorName) {
-    this(behavior, actorName, Props.empty());
+  public SpawnActorInfo(Behavior<T> behavior, ActorCreationStrategy creationStrategy) {
+    this(behavior, creationStrategy, Props.empty());
   }
 
   /**
    * @param behavior – behavior of the actor to spawn
-   * @param actorName – name of the actor to spawn
+   * @param creationStrategy – creation strategy of the actor to spawn
    * @param props – props of the actor to spawn
    */
-  public SpawnActorInfo(Behavior<T> behavior, String actorName, Props props) {
+  public SpawnActorInfo(Behavior<T> behavior, ActorCreationStrategy creationStrategy, Props props) {
     this.behavior = behavior;
-    this.actorName = actorName;
+    this.creationStrategy = creationStrategy;
     this.props = props;
   }
 
@@ -49,8 +49,8 @@ public class SpawnActorInfo<T> {
    *
    * @return – name of the actor to spawn
    */
-  public String actorName() {
-    return actorName;
+  public ActorCreationStrategy creationStrategy() {
+    return creationStrategy;
   }
 
   /**
