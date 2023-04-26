@@ -1,5 +1,6 @@
 package me.dmmax.akka.spawn.protocol.guice;
 
+import java.util.UUID;
 import javax.inject.Singleton;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -13,7 +14,6 @@ import akka.actor.testkit.typed.javadsl.TestProbe;
 import akka.actor.typed.ActorRef;
 import akka.actor.typed.ActorSystem;
 import akka.actor.typed.Props;
-import akka.actor.typed.Scheduler;
 import me.dmmax.akka.spawn.protocol.ActorCreationStrategy;
 import me.dmmax.akka.spawn.protocol.PingActor;
 import me.dmmax.akka.spawn.protocol.PingActor.Ping;
@@ -40,7 +40,6 @@ class RegisterSpawnProtocolModuleTest {
     ActorRef<PingActor.Ping> pingActor = spawner.createActor(pingActorInfo);
     // then
     TestProbe<Pong> pongTestProbe = akkaTestKitExtension.testKit().createTestProbe();
-    // It is possible to access nested actor directly
     pingActor.tell(new Ping(pongTestProbe.getRef()));
     pongTestProbe.expectMessage(new Pong(pingActor));
   }
@@ -49,33 +48,17 @@ class RegisterSpawnProtocolModuleTest {
   private Injector createInjectorWithRegisterModule() {
     return Guice.createInjector(
         new RegisterSpawnProtocolModule<>(Command.class, SpawnActorCommandWrapper::new),
-        new TestModule(akkaTestKitExtension));
+        new AkkaActorSystemModule(akkaTestKitExtension),
+        new RegisterSpawnerActorModule());
   }
 
-  public static class TestModule extends AbstractModule {
-
-    private final AkkaTestKitExtension _extension;
-
-    public TestModule(AkkaTestKitExtension extension) {
-      _extension = extension;
-    }
-
-    @Provides
-    @Singleton
-    ActorSystem<Void> actorSystem() {
-      return _extension.actorSystem();
-    }
-
-    @Provides
-    @Singleton
-    Scheduler scheduler() {
-      return _extension.scheduler();
-    }
+  static class RegisterSpawnerActorModule extends AbstractModule {
 
     @Provides
     @Singleton
     ActorRef<Command> spawnerActor(ActorSystem<Void> actorSystem) {
-      return actorSystem.systemActorOf(SpawnerActor.create(), "spawner", Props.empty());
+      // A root actor anyway should be created by the actor system to be accessible in SpawnProtocol
+      return actorSystem.systemActorOf(SpawnerActor.create(), "spawner-" + UUID.randomUUID(), Props.empty());
     }
   }
 }

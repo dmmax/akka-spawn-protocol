@@ -8,6 +8,11 @@ import akka.actor.typed.Scheduler;
 import me.dmmax.akka.spawn.protocol.SpawnCommandConverter;
 import me.dmmax.akka.spawn.protocol.SpawnProtocol;
 
+/**
+ * Provides {@link SpawnProtocol} for a specific type of actor.
+ *
+ * @param <T> - actor type
+ */
 class SpawnProtocolProvider<T> implements Provider<SpawnProtocol<T>> {
 
   private final Scheduler scheduler;
