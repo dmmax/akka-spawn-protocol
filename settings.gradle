@@ -1,2 +1,5 @@
 rootProject.name = "akka_spawn_protocol"
 include 'core'
+include 'extensions'
+include 'extensions:guice'
+
