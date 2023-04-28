@@ -8,6 +8,7 @@ class MyModule extends AbstractModule {
   
     @Override
     protected void configure() {
+      // Be sure that ActorRef<MyActor.Command> is already available in the Guice context
       install(new RegisterSpawnProtocolModule<>(MyActor.Command.class, MyActor.SpawnActorCommandWrapper::new));
     }
 }
