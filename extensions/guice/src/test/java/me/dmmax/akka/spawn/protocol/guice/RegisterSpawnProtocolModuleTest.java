@@ -36,11 +36,14 @@ class RegisterSpawnProtocolModuleTest {
 
   @Test
   void should_register_spawn_protocol() {
+    // given
     Injector injector = createInjector();
+    // when
     SpawnProtocol<Command> spawner = injector.getInstance(spawnProtocolKey(Command.class));
+    // then try to spawn ping actor manually
     SpawnActorInfo<PingActor.Ping> pingActorInfo = new SpawnActorInfo<>(PingActor.create(), ActorCreationStrategy.sequence("pinger"));
     ActorRef<PingActor.Ping> pingActor = spawner.createActor(pingActorInfo);
-    // then
+    // then verify ping actor works
     TestProbe<Pong> pongTestProbe = akkaTestKitExtension.testKit().createTestProbe();
     pingActor.tell(new Ping(pongTestProbe.getRef()));
     pongTestProbe.expectMessage(new Pong(pingActor));
@@ -52,7 +55,7 @@ class RegisterSpawnProtocolModuleTest {
     Injector injector = createInjector(new RegisterNestedActorModule());
     // when
     ActorRef<Ping> pingActor = injector.getInstance(actorRefKey(Ping.class));
-    // then
+    // then verify ping actor works
     TestProbe<Pong> pongTestProbe = akkaTestKitExtension.testKit().createTestProbe();
     pingActor.tell(new Ping(pongTestProbe.getRef()));
     pongTestProbe.expectMessage(new Pong(pingActor));

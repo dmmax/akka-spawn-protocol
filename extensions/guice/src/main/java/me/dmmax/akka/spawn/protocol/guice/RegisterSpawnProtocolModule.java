@@ -27,9 +27,7 @@ public class RegisterSpawnProtocolModule<T> extends AbstractModule {
 
   @Override
   protected void configure() {
-    // Register spawn command converter
     bind(spawnCommandConverterKey(actorType)).toInstance(this.spawnCommandConverter);
-    // Register spawn protocol
     bind(spawnProtocolKey(actorType)).toProvider(spawnProtocolProviderKey(actorType));
   }
 }

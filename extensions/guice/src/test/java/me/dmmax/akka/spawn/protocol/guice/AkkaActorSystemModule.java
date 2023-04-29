@@ -7,6 +7,9 @@ import akka.actor.typed.ActorSystem;
 import akka.actor.typed.Scheduler;
 import me.dmmax.akka.spawn.protocol.utils.AkkaTestKitExtension;
 
+/**
+ * Guice module to register {@link ActorSystem} and {@link Scheduler} which are provided by {@link AkkaTestKitExtension}
+ */
 public class AkkaActorSystemModule extends AbstractModule {
 
   private final AkkaTestKitExtension _extension;
