@@ -2,5 +2,6 @@
 ext.versions = [
         akka   : '2.6.20',
         jupiter: '5.8.1',
-        assertJ: '3.24.2'
+        assertJ: '3.24.2',
+        guice  : '5.0.1'
 ]

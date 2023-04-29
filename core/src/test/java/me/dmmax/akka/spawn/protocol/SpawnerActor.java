@@ -53,15 +53,15 @@ public class SpawnerActor extends AbstractBehavior<Command> {
     return Behaviors.setup(SpawnerActor::new);
   }
 
-  interface Command {
+  public interface Command {
 
   }
 
-  static class SpawnActorCommandWrapper<CHILD> implements Command {
+  public static class SpawnActorCommandWrapper<CHILD> implements Command {
 
     private final SpawnActor<CHILD> askSpawnResponse;
 
-    SpawnActorCommandWrapper(SpawnActor<CHILD> askSpawnResponse) {
+    public SpawnActorCommandWrapper(SpawnActor<CHILD> askSpawnResponse) {
       this.askSpawnResponse = askSpawnResponse;
     }
 
