@@ -1,5 +1,5 @@
 dependencies {
     implementation(
-            "com.google.inject:guice:${versions.guice}",
+            "com.google.inject:guice:${versions.guice}"
     )
 }
