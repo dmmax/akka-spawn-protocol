@@ -28,9 +28,9 @@ class SpawnProtocolTest {
   void should_create_nested_actor_under_root() {
     // given
     SpawnProtocol<Command> rootActorSpawner = createAndWrapActorIntoSpawnProtocol();
-    SpawnActorInfo<PingActor.Ping> pingActorInfo = new SpawnActorInfo<>(PingActor.create(), ActorCreationStrategy.sequence("pinger"));
+    SpawnActorInfo<Ping> pingActorInfo = new SpawnActorInfo<>(PingActor.create(), ActorCreationStrategy.sequence("pinger"));
     // when
-    ActorRef<PingActor.Ping> pingActor = rootActorSpawner.createActor(pingActorInfo);
+    ActorRef<Ping> pingActor = rootActorSpawner.createActor(pingActorInfo);
     // then
     verifyPingActor(pingActor);
   }
@@ -39,10 +39,10 @@ class SpawnProtocolTest {
   void should_spawn_two_child_actor_with_same_defined_prefix() {
     // given
     SpawnProtocol<Command> rootActorSpawner = createAndWrapActorIntoSpawnProtocol();
-    SpawnActorInfo<PingActor.Ping> pingActorInfo = new SpawnActorInfo<>(PingActor.create(), ActorCreationStrategy.sequence("pinger"));
+    SpawnActorInfo<Ping> pingActorInfo = new SpawnActorInfo<>(PingActor.create(), ActorCreationStrategy.sequence("pinger"));
     // when
-    ActorRef<PingActor.Ping> pingActor1 = rootActorSpawner.createActor(pingActorInfo);
-    ActorRef<PingActor.Ping> pingActor2 = rootActorSpawner.createActor(pingActorInfo);
+    ActorRef<Ping> pingActor1 = rootActorSpawner.createActor(pingActorInfo);
+    ActorRef<Ping> pingActor2 = rootActorSpawner.createActor(pingActorInfo);
     // then
     assertThat(pingActor1.path().name()).isEqualTo("pinger");
     assertThat(pingActor2.path().name()).isEqualTo("pinger-1");
