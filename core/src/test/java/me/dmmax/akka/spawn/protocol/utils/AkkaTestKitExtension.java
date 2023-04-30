@@ -11,7 +11,7 @@ import akka.actor.typed.Scheduler;
 public class AkkaTestKitExtension implements BeforeAllCallback, AfterAllCallback {
 
   private final Supplier<ActorTestKit> testKitSupplier;
-  private ActorTestKit _testKit;
+  private ActorTestKit testKit;
 
   public AkkaTestKitExtension() {
     this(ActorTestKit::create);
@@ -23,13 +23,13 @@ public class AkkaTestKitExtension implements BeforeAllCallback, AfterAllCallback
 
   @Override
   public void beforeAll(ExtensionContext context) {
-    _testKit = testKitSupplier.get();
+    testKit = testKitSupplier.get();
   }
 
   @Override
   public void afterAll(ExtensionContext context) {
-    if (_testKit != null) {
-      _testKit.shutdownTestKit();
+    if (testKit != null) {
+      testKit.shutdownTestKit();
     }
   }
 
@@ -42,6 +42,6 @@ public class AkkaTestKitExtension implements BeforeAllCallback, AfterAllCallback
   }
 
   public ActorTestKit testKit() {
-    return _testKit;
+    return testKit;
   }
 }

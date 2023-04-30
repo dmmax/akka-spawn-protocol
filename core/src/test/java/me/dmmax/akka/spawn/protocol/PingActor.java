@@ -24,7 +24,6 @@ public class PingActor extends AbstractBehavior<Ping> {
   }
 
   private Behavior<Ping> onPing(Ping ping) {
-    System.out.println("Ping");
     ping.replyTo().tell(new Pong(getContext().getSelf()));
     return this;
   }

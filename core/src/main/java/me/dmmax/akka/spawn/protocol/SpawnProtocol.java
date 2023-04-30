@@ -18,6 +18,12 @@ public class SpawnProtocol<P> {
   private final ActorRef<P> parentActor;
   private final SpawnCommandConverter<P> spawnCommandConverter;
 
+  /**
+   * @param scheduler - scheduler
+   * @param askTimeout - ask timeout
+   * @param parentActor - parent actor
+   * @param spawnCommandConverter - spawn command converter
+   */
   public SpawnProtocol(Scheduler scheduler, Duration askTimeout, ActorRef<P> parentActor, SpawnCommandConverter<P> spawnCommandConverter) {
     this.scheduler = scheduler;
     this.askTimeout = askTimeout;
@@ -46,7 +52,7 @@ public class SpawnProtocol<P> {
    */
   public <C> ActorRef<C> createActor(SpawnActorInfo<C> childActorInfo, Duration askTimeout) {
     Function<ActorRef<AskSpawnResponse<C>>, P> messageFactory = actorRef -> {
-      SpawnActor<C> spawnChildActorCommand = new SpawnActor<>(actorRef, childActorInfo);
+      SpawnActorCommand<C> spawnChildActorCommand = new SpawnActorCommand<>(actorRef, childActorInfo);
       return spawnCommandConverter.toActorSpawnMessage(spawnChildActorCommand);
     };
     return AskPattern.ask(

@@ -7,7 +7,7 @@ import akka.actor.typed.ActorRef;
  *
  * @param <T> – type of the actor to spawn
  */
-public class SpawnActor<T> {
+public class SpawnActorCommand<T> {
 
   private final ActorRef<AskSpawnResponse<T>> replyTo;
   private final SpawnActorInfo<T> actorInfo;
@@ -16,7 +16,7 @@ public class SpawnActor<T> {
    * @param replyTo – actor to send response to
    * @param actorInfo – information about actor to spawn
    */
-  public SpawnActor(ActorRef<AskSpawnResponse<T>> replyTo, SpawnActorInfo<T> actorInfo) {
+  public SpawnActorCommand(ActorRef<AskSpawnResponse<T>> replyTo, SpawnActorInfo<T> actorInfo) {
     this.replyTo = replyTo;
     this.actorInfo = actorInfo;
   }
