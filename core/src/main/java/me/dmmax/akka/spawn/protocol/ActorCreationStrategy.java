@@ -23,14 +23,23 @@ public interface ActorCreationStrategy {
    */
   <C, P> ActorRef<C> createActor(ActorContext<P> actorContext, Behavior<C> behavior, Props props);
 
+  /**
+   * Creates an actor with an anonymous name.
+   */
   static ActorCreationStrategy anonymous() {
     return new AnnonymousActorCreationStrategy();
   }
 
+  /**
+   * Creates an actor with a unique suffix using {@link UUID}.
+   */
   static ActorCreationStrategy unique(String namePrefix) {
     return new UniqueNameActorCreationStrategy(namePrefix);
   }
 
+  /**
+   * Creates an actor with a sequential suffix.
+   */
   static ActorCreationStrategy sequence(String namePrefix) {
     return new SequenceNameActorCreationStrategy(namePrefix);
   }

@@ -3,7 +3,7 @@ package me.dmmax.akka.spawn.protocol.guice;
 import static me.dmmax.akka.spawn.protocol.guice.SpawnProtocolTypes.*;
 
 import com.google.inject.AbstractModule;
-import me.dmmax.akka.spawn.protocol.SpawnActor;
+import me.dmmax.akka.spawn.protocol.SpawnActorCommand;
 import me.dmmax.akka.spawn.protocol.SpawnCommandConverter;
 
 /**
@@ -18,7 +18,7 @@ public class RegisterSpawnProtocolModule<T> extends AbstractModule {
 
   /**
    * @param actorType – actor type
-   * @param spawnCommandConverter – command converter which wraps {@link SpawnActor} to actor message type
+   * @param spawnCommandConverter – command converter which wraps {@link SpawnActorCommand} to actor message type
    */
   public RegisterSpawnProtocolModule(Class<T> actorType, SpawnCommandConverter<T> spawnCommandConverter) {
     this.actorType = actorType;

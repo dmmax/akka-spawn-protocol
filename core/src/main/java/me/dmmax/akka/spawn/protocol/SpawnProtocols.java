@@ -17,7 +17,7 @@ public class SpawnProtocols {
    * @param <C> - child actor message type
    * @return spawned child actor reference
    */
-  public static <P, C> ActorRef<C> spawnChildActor(ActorContext<P> actorContext, SpawnActor<C> spawnActorCommand) {
+  public static <P, C> ActorRef<C> spawnChildActor(ActorContext<P> actorContext, SpawnActorCommand<C> spawnActorCommand) {
     SpawnActorInfo<C> actorInfo = spawnActorCommand.actorInfo();
     ActorRef<C> childActor = actorInfo.creationStrategy().createActor(actorContext, actorInfo.behavior(), actorInfo.props());
     AskSpawnResponse<C> askSpawnResponse = new AskSpawnResponse<>(childActor);

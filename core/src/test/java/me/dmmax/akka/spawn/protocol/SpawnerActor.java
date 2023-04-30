@@ -10,6 +10,9 @@ import me.dmmax.akka.spawn.protocol.PingActor.Ping;
 import me.dmmax.akka.spawn.protocol.PongActor.Pong;
 import me.dmmax.akka.spawn.protocol.SpawnerActor.Command;
 
+/**
+ * An actor with a possibility to spawn child actors using the command {@link SpawnActorCommandWrapper}.
+ */
 public class SpawnerActor extends AbstractBehavior<Command> {
 
   private final ActorRef<Ping> pingWrapper;
@@ -36,14 +39,12 @@ public class SpawnerActor extends AbstractBehavior<Command> {
   }
 
   private Behavior<Command> onPing(PingWrapper wrapper) {
-    System.out.println("Ping");
     Ping ping = wrapper.ping();
     ping.replyTo().tell(new Pong(pingWrapper));
     return this;
   }
 
   private Behavior<Command> onPong(PongWrapper wrapper) {
-    System.out.println("Pong");
     Pong pong = wrapper.pong();
     pong.replyTo().tell(new Ping(pongWrapper));
     return this;
@@ -59,13 +60,13 @@ public class SpawnerActor extends AbstractBehavior<Command> {
 
   public static class SpawnActorCommandWrapper<CHILD> implements Command {
 
-    private final SpawnActor<CHILD> askSpawnResponse;
+    private final SpawnActorCommand<CHILD> askSpawnResponse;
 
-    public SpawnActorCommandWrapper(SpawnActor<CHILD> askSpawnResponse) {
+    public SpawnActorCommandWrapper(SpawnActorCommand<CHILD> askSpawnResponse) {
       this.askSpawnResponse = askSpawnResponse;
     }
 
-    private SpawnActor<CHILD> spawnActorCommand() {
+    private SpawnActorCommand<CHILD> spawnActorCommand() {
       return askSpawnResponse;
     }
   }

@@ -12,21 +12,21 @@ import me.dmmax.akka.spawn.protocol.utils.AkkaTestKitExtension;
  */
 public class AkkaActorSystemModule extends AbstractModule {
 
-  private final AkkaTestKitExtension _extension;
+  private final AkkaTestKitExtension extension;
 
   public AkkaActorSystemModule(AkkaTestKitExtension extension) {
-    _extension = extension;
+    this.extension = extension;
   }
 
   @Provides
   @Singleton
   ActorSystem<Void> actorSystem() {
-    return _extension.actorSystem();
+    return extension.actorSystem();
   }
 
   @Provides
   @Singleton
   Scheduler scheduler() {
-    return _extension.scheduler();
+    return extension.scheduler();
   }
 }

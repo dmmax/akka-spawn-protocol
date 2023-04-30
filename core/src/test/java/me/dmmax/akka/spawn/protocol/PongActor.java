@@ -5,13 +5,14 @@ import akka.actor.typed.ActorRef;
 import akka.actor.typed.Behavior;
 import akka.actor.typed.javadsl.AbstractBehavior;
 import akka.actor.typed.javadsl.ActorContext;
+import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
 import me.dmmax.akka.spawn.protocol.PingActor.Ping;
 import me.dmmax.akka.spawn.protocol.PongActor.Pong;
 
 public class PongActor extends AbstractBehavior<Pong> {
 
-  public PongActor(ActorContext<Pong> context) {
+  private PongActor(ActorContext<Pong> context) {
     super(context);
   }
 
@@ -23,9 +24,12 @@ public class PongActor extends AbstractBehavior<Pong> {
   }
 
   private Behavior<Pong> onPong(Pong pong) {
-    System.out.println("Pong");
     pong.replyTo().tell(new Ping(getContext().getSelf()));
     return this;
+  }
+
+  public static Behavior<Pong> create() {
+    return Behaviors.setup(PongActor::new);
   }
 
   public static class Pong {
