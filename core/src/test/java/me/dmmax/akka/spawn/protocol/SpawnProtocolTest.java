@@ -1,5 +1,7 @@
 package me.dmmax.akka.spawn.protocol;
 
+import static org.assertj.core.api.Assertions.*;
+
 import java.time.Duration;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
@@ -14,7 +16,10 @@ import me.dmmax.akka.spawn.protocol.SpawnerActor.Command;
 import me.dmmax.akka.spawn.protocol.SpawnerActor.SpawnActorCommandWrapper;
 import me.dmmax.akka.spawn.protocol.utils.AkkaTestKitExtension;
 
-class SpawnProtocolIntegrationTest {
+/**
+ * This test shows how to create nested actors using the {@link SpawnProtocol}
+ */
+class SpawnProtocolTest {
 
   @RegisterExtension
   static AkkaTestKitExtension akkaTestKitExtension = new AkkaTestKitExtension();
@@ -27,14 +32,11 @@ class SpawnProtocolIntegrationTest {
     // when
     ActorRef<PingActor.Ping> pingActor = rootActorSpawner.createActor(pingActorInfo);
     // then
-    TestProbe<Pong> pongTestProbe = akkaTestKitExtension.testKit().createTestProbe();
-    // It is possible to access nested actor directly
-    pingActor.tell(new Ping(pongTestProbe.getRef()));
-    pongTestProbe.expectMessage(new Pong(pingActor));
+    verifyPingActor(pingActor);
   }
 
   @Test
-  void should_spawn_two_child_actor_with_same_name() {
+  void should_spawn_two_child_actor_with_same_defined_prefix() {
     // given
     SpawnProtocol<Command> rootActorSpawner = createAndWrapActorIntoSpawnProtocol();
     SpawnActorInfo<PingActor.Ping> pingActorInfo = new SpawnActorInfo<>(PingActor.create(), ActorCreationStrategy.sequence("pinger"));
@@ -42,12 +44,44 @@ class SpawnProtocolIntegrationTest {
     ActorRef<PingActor.Ping> pingActor1 = rootActorSpawner.createActor(pingActorInfo);
     ActorRef<PingActor.Ping> pingActor2 = rootActorSpawner.createActor(pingActorInfo);
     // then
+    assertThat(pingActor1.path().name()).isEqualTo("pinger");
+    assertThat(pingActor2.path().name()).isEqualTo("pinger-1");
+    verifyPingActor(pingActor1);
+    verifyPingActor(pingActor2);
+  }
+
+  @Test
+  void should_spawn_actor_using_anonymous_strategy() {
+    // given
+    SpawnProtocol<Command> andWrapActorIntoSpawnProtocol = createAndWrapActorIntoSpawnProtocol();
+    SpawnActorInfo<Pong> pongActorInfo = new SpawnActorInfo<>(PongActor.create(), ActorCreationStrategy.anonymous());
+    // when
+    ActorRef<Pong> pingActor = andWrapActorIntoSpawnProtocol.createActor(pongActorInfo);
+    // then
+    verifyPongActor(pingActor);
+  }
+
+  @Test
+  void should_spawn_actor_using_unique_strategy() {
+    // given
+    SpawnProtocol<Command> andWrapActorIntoSpawnProtocol = createAndWrapActorIntoSpawnProtocol();
+    SpawnActorInfo<Ping> pingActorInfo = new SpawnActorInfo<>(PingActor.create(), ActorCreationStrategy.unique("my-actor"));
+    // when
+    ActorRef<Ping> pingActor = andWrapActorIntoSpawnProtocol.createActor(pingActorInfo);
+    // then
+    verifyPingActor(pingActor);
+  }
+
+  private void verifyPingActor(ActorRef<Ping> pingActor) {
     TestProbe<Pong> pongTestProbe = akkaTestKitExtension.testKit().createTestProbe();
-    // It is possible to access nested actor directly
-    pingActor1.tell(new Ping(pongTestProbe.getRef()));
-    pongTestProbe.expectMessage(new Pong(pingActor1));
-    pingActor2.tell(new Ping(pongTestProbe.getRef()));
-    pongTestProbe.expectMessage(new Pong(pingActor2));
+    pingActor.tell(new Ping(pongTestProbe.getRef()));
+    pongTestProbe.expectMessage(new Pong(pingActor));
+  }
+
+  private void verifyPongActor(ActorRef<Pong> pongActor) {
+    TestProbe<Ping> pingTestProbe = akkaTestKitExtension.testKit().createTestProbe();
+    pongActor.tell(new Pong(pingTestProbe.getRef()));
+    pingTestProbe.expectMessage(new Ping(pongActor));
   }
 
   private SpawnProtocol<Command> createAndWrapActorIntoSpawnProtocol() {
