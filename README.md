@@ -10,23 +10,23 @@ Create a spawn protocol
 
 ```java
 // Preconditions
-akka.actor.ActorSystem classicActorSystem=akka.actor.ActorSystem.create();
-ActorSystem<Void> actorSystem=Adapter.toTyped(classicActorSystem);
-Scheduler scheduler=actorSystem.scheduler();
+akka.actor.ActorSystem classicActorSystem = akka.actor.ActorSystem.create();
+ActorSystem<Void> actorSystem = Adapter.toTyped(classicActorSystem);
+Scheduler scheduler = actorSystem.scheduler();
 // Actor-specific configuration
-Duration askTimeout=Duration.ofSeconds(1);
-ActorRef<SpawnerActor.Command>spawnerActor=actorSystem.systemActorOf(SpawnerActor.create(),"rootActor",Props.empty());
+Duration askTimeout = Duration.ofSeconds(1);
+ActorRef<SpawnerActor.Command> spawnerActor = actorSystem.systemActorOf(SpawnerActor.create(),"rootActor",Props.empty());
 // Create the spawn actor
-SpawnProtocol<SpawnerActor.Command>spawnProtocol=new SpawnProtocol<>(scheduler,askTimeout,spawnerActor,SpawnActorCommandWrapper::new);
+SpawnProtocol<SpawnerActor.Command> spawnProtocol = new SpawnProtocol<>(scheduler,askTimeout,spawnerActor,SpawnActorCommandWrapper::new);
 ```
 
 Create actors using SpawnProtocol
 
 ```java
-SpawnProtocol<SpawnerActor.Command>spawnProtocol=...;
+SpawnProtocol<SpawnerActor.Command>spawnProtocol = ...;
 // Create a child actor
-SpawnActorInfo<Ping> pingActorInfo=new SpawnActorInfo<>(PingActor.create(),ActorCreationStrategy.unique("pinger"));
-ActorRef<Ping> pingActor=spawnPtocol.create(pingActorInfo);
+SpawnActorInfo<Ping> pingActorInfo = new SpawnActorInfo<>(PingActor.create(),ActorCreationStrategy.unique("pinger"));
+ActorRef<Ping> pingActor = spawnPtocol.create(pingActorInfo);
 ```
 
 ## Available extensions
