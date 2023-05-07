@@ -1,23 +1,48 @@
 plugins {
-    id 'java'
-    id 'java-library'
-    id 'ru.vyarus.github-info' version '1.5.0'
+    id 'ru.vyarus.github-info' version '1.5.0' apply false
+    id 'org.cyclonedx.bom' version '1.7.4' apply false
+
+    id 'jacoco'
+    id 'java-platform'
+    id 'ru.vyarus.java-lib' version '2.4.0'
 }
 
-sourceCompatibility = 1.8
+wrapper {
+    gradleVersion = '8.0'
+}
 
-group = 'me.dmmax'
 description = 'Using Spawn Protocol for Akka Actors in any nested level of actors hierarchy'
 
-repositories {
-    mavenLocal()
-    mavenCentral()
-    gradlePluginPortal()
+ext {
+    akka = '2.6.20'
 }
 
-subprojects {
-    apply plugin: 'java'
-    apply from: "$rootDir/gradle/versions.gradle"
+// root project is a BOM
+dependencies {
+    // inherited BOMs declaration
+    api platform("com.typesafe.akka:akka-bom_2.12:$akka")
+
+    constraints {
+        // add subprojects to BOM
+        project.subprojects.each { api it }
+    }
+}
+
+javaLib {
+    // aggregated test and coverage reports
+    aggregateReports()
+    // publish root BOM as custom artifact
+    bom {
+        artifactId = 'akka-spawn-protocol-bom'
+        description = 'Akka Spawn Protocol BOM'
+    }
+}
+
+
+allprojects {
+    apply plugin: 'project-report'
+    apply plugin: 'ru.vyarus.github-info'
+    apply plugin: 'ru.vyarus.java-lib'
 
     repositories {
         mavenLocal()
@@ -25,12 +50,88 @@ subprojects {
         gradlePluginPortal()
     }
 
-    test {
-        useJUnitPlatform()
+    group = 'me.dmmax.akka'
+
+    github {
+        user 'dmmax'
+        license 'MIT'
     }
+
+    // delay required because java plugin is activated only in subprojects and without it
+    // pom closure would reference root project only
+    afterEvaluate {
+        pom {
+            developers {
+                developer {
+                    id 'dmmax'
+                    name 'Maksim Dimukhametov'
+                    email 'maksim.dimukhametov@gmail.com'
+                }
+            }
+        }
+    }
+
+    // don't publish gradle metadata artifact
+    javaLib.withoutGradleMetadata()
 }
 
-github {
-    user 'dmmax'
-    license 'MIT'
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'jacoco'
+    apply plugin: 'org.cyclonedx.bom'
+
+    sourceCompatibility = 8
+
+    // common dependencies for all modules
+    dependencies {
+
+        implementation(
+                platform(project(':')),
+                "com.typesafe.akka:akka-actor-typed_2.12"
+        )
+
+        testImplementation(
+                "org.junit.jupiter:junit-jupiter-api:5.7.1",
+                "org.assertj:assertj-core:3.24.2",
+                "com.typesafe.akka:akka-actor-testkit-typed_2.12"
+        )
+        testRuntimeOnly(
+                "org.junit.jupiter:junit-jupiter-engine:5.7.1"
+        )
+
+        if (project.name != 'core') {
+            implementation project(":core")
+            testImplementation project(":core").sourceSets.test.output
+        }
+    }
+
+    javaLib {
+        // java 9 auto module name
+        autoModuleName = "$group.${project.name.replace('-', '.')}"
+        // use only direct dependencies in the generated pom, removing BOM mentions
+        pom.removeDependencyManagement()
+    }
+
+    test {
+        maxHeapSize = '512m'
+    }
+
+    // SBOM
+    cyclonedxBom {
+        includeConfigs = ["runtimeClasspath"]
+        destination = file("build/reports")
+        outputName = "bom"
+        outputFormat = "all"
+    }
+
+    publishing.publications.maven {
+        artifact(file('build/reports/bom.json')) {
+            classifier = 'cyclonedx'
+            builtBy cyclonedxBom
+        }
+        artifact(file('build/reports/bom.xml')) {
+            classifier = 'cyclonedx'
+            builtBy cyclonedxBom
+        }
+    }
 }
