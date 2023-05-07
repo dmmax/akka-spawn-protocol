@@ -1,0 +1,17 @@
+dependencies {
+    implementation(
+            // All extensions depend on the core module
+            project(":akka-spawn-protocol"),
+            "com.typesafe.akka:akka-actor-typed_2.12:${versions.akka}",
+            "com.google.inject:guice:${versions.guice}"
+    )
+    testImplementation(
+            project(":akka-spawn-protocol").sourceSets.test.output,
+            "org.junit.jupiter:junit-jupiter-api:${versions.jupiter}",
+            "com.typesafe.akka:akka-actor-testkit-typed_2.12:${versions.akka}",
+            "org.assertj:assertj-core:${versions.assertJ}"
+    )
+    testRuntimeOnly(
+            "org.junit.jupiter:junit-jupiter-engine:${versions.jupiter}"
+    )
+}
