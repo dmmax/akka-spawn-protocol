@@ -1,4 +1,4 @@
-rootProject.name = "akka-spawn-protocol"
+rootProject.name = "akka_spawn_protocol"
 include 'akka-spawn-protocol'
 include 'akka-spawn-protocol-guice'
 

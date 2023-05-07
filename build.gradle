@@ -99,15 +99,16 @@ subprojects {
                 "org.junit.jupiter:junit-jupiter-engine:5.7.1"
         )
 
-        if (project.name != 'core') {
-            implementation project(":core")
-            testImplementation project(":core").sourceSets.test.output
+        if (project.name != 'akka-spawn-protocol') {
+            // If it's dependency, we should include the source code of the core module
+            implementation project(":akka-spawn-protocol")
+            testImplementation project(":akka-spawn-protocol").sourceSets.test.output
         }
     }
 
     javaLib {
         // java 9 auto module name
-        autoModuleName = "$group.${project.name.replace('-', '.')}"
+        autoModuleName = "$group.${project.name.replace('-', '.')}".replace('akka.akka.', 'akka.')
         // use only direct dependencies in the generated pom, removing BOM mentions
         pom.removeDependencyManagement()
     }
