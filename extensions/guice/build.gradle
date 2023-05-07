@@ -1,0 +1,3 @@
+dependencies {
+    implementation "com.google.inject:guice:5.0.1"
+}
