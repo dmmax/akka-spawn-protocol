@@ -41,7 +41,7 @@ ActorRef<Ping> pingActor = spawnPtocol.create(pingActorInfo);
 
 ## Available extensions
 
-* [Guice integration](extensions/guice/README.md)
+* [Guice integration](akka-spawn-protocol-guice/README.md)
 
 ## Todo
 
