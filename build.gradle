@@ -1,23 +1,51 @@
 plugins {
-    id 'java'
-    id 'java-library'
-    id 'ru.vyarus.github-info' version '1.5.0'
+    id 'org.cyclonedx.bom' version '1.7.4' apply false
+    id 'ru.vyarus.github-info' version '1.5.0' apply false
+
+    id 'io.github.gradle-nexus.publish-plugin' version '1.3.0'
+    id 'jacoco'
+    id 'java-platform'
+    id 'net.researchgate.release' version '3.0.2'
+    id 'ru.vyarus.java-lib' version '2.4.0'
 }
 
-sourceCompatibility = 1.8
+wrapper {
+    gradleVersion = '8.0'
+}
 
-group = 'me.dmmax'
 description = 'Using Spawn Protocol for Akka Actors in any nested level of actors hierarchy'
 
-repositories {
-    mavenLocal()
-    mavenCentral()
-    gradlePluginPortal()
+ext {
+    akka = '2.6.20'
 }
 
-subprojects {
-    apply plugin: 'java'
-    apply from: "$rootDir/gradle/versions.gradle"
+// root project is a BOM
+dependencies {
+    // inherited BOMs declaration
+    api platform("com.typesafe.akka:akka-bom_2.12:$akka")
+
+    constraints {
+        // add subprojects to BOM
+        project.subprojects.each { api it }
+    }
+}
+
+javaLib {
+    // aggregated test and coverage reports
+    aggregateReports()
+    // publish root BOM as custom artifact
+    bom {
+        artifactId = 'akka-spawn-protocol-bom'
+        description = 'Akka Spawn Protocol BOM'
+    }
+}
+
+
+allprojects {
+    apply plugin: 'project-report'
+    apply plugin: 'ru.vyarus.github-info'
+    apply plugin: 'ru.vyarus.java-lib'
+    apply plugin: 'signing'
 
     repositories {
         mavenLocal()
@@ -25,12 +53,115 @@ subprojects {
         gradlePluginPortal()
     }
 
+    group = 'me.dmmax.akka'
+
+    github {
+        user 'dmmax'
+        license 'MIT'
+    }
+
+    // delay required because java plugin is activated only in subprojects and without it
+    // pom closure would reference root project only
+    afterEvaluate {
+        pom {
+            developers {
+                developer {
+                    id 'dmmax'
+                    name 'Maksim Dimukhametov'
+                    email 'maksim.dimukhametov@gmail.com'
+                }
+            }
+        }
+    }
+
+    // don't publish gradle metadata artifact
+    javaLib.withoutGradleMetadata()
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'jacoco'
+    apply plugin: 'org.cyclonedx.bom'
+
+    sourceCompatibility = 8
+
+    // common dependencies for all modules
+    dependencies {
+
+        implementation(
+                platform(project(':')),
+                "com.typesafe.akka:akka-actor-typed_2.12"
+        )
+
+        testImplementation(
+                "org.junit.jupiter:junit-jupiter-api:5.7.1",
+                "org.assertj:assertj-core:3.24.2",
+                "com.typesafe.akka:akka-actor-testkit-typed_2.12"
+        )
+        testRuntimeOnly(
+                "org.junit.jupiter:junit-jupiter-engine:5.7.1"
+        )
+
+        if (project.name != 'akka-spawn-protocol') {
+            // If it's dependency, we should include the source code of the core module
+            implementation project(":akka-spawn-protocol")
+            testImplementation project(":akka-spawn-protocol").sourceSets.test.output
+        }
+    }
+
+    javaLib {
+        // java 9 auto module name
+        autoModuleName = "$group.${project.name.replace('-', '.')}".replace('akka.akka.', 'akka.')
+        // use only direct dependencies in the generated pom, removing BOM mentions
+        pom.removeDependencyManagement()
+    }
+
     test {
-        useJUnitPlatform()
+        maxHeapSize = '512m'
+    }
+
+    // SBOM
+    cyclonedxBom {
+        includeConfigs = ["runtimeClasspath"]
+        destination = file("build/reports")
+        outputName = "bom"
+        outputFormat = "all"
+    }
+
+    publishing.publications.maven {
+        artifact(file('build/reports/bom.json')) {
+            classifier = 'cyclonedx'
+            builtBy cyclonedxBom
+        }
+        artifact(file('build/reports/bom.xml')) {
+            classifier = 'cyclonedx'
+            builtBy cyclonedxBom
+        }
     }
 }
 
-github {
-    user 'dmmax'
-    license 'MIT'
+nexusPublishing {
+    repositories {
+        sonatype {
+            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+            username = findProperty('sonatypeUser')
+            password = findProperty('sonatypePassword')
+        }
+    }
+}
+
+// Required signing properties for release: signing.keyId, signing.password and signing.secretKeyRingFile
+// (https://docs.gradle.org/current/userguide/signing_plugin.html#sec:signatory_credentials)
+
+release.git.requireBranch.set('main')
+
+// release manages only root project (subprojects will be checked and released implicitly)
+afterReleaseBuild {
+    dependsOn 'publishToSonatype'
+    dependsOn subprojects.collect { ":$it.name:publishToSonatype" }
+    dependsOn 'closeAndReleaseSonatypeStagingRepository'
+    doLast {
+        logger.warn "RELEASED $project.group:$project.name:$project.version"
+    }
 }
