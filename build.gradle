@@ -1,9 +1,11 @@
 plugins {
-    id 'ru.vyarus.github-info' version '1.5.0' apply false
     id 'org.cyclonedx.bom' version '1.7.4' apply false
+    id 'ru.vyarus.github-info' version '1.5.0' apply false
 
+    id 'io.github.gradle-nexus.publish-plugin' version '1.3.0'
     id 'jacoco'
     id 'java-platform'
+    id 'net.researchgate.release' version '3.0.2'
     id 'ru.vyarus.java-lib' version '2.4.0'
 }
 
@@ -43,6 +45,7 @@ allprojects {
     apply plugin: 'project-report'
     apply plugin: 'ru.vyarus.github-info'
     apply plugin: 'ru.vyarus.java-lib'
+    apply plugin: 'signing'
 
     repositories {
         mavenLocal()
@@ -134,5 +137,31 @@ subprojects {
             classifier = 'cyclonedx'
             builtBy cyclonedxBom
         }
+    }
+}
+
+nexusPublishing {
+    repositories {
+        sonatype {
+            username = findProperty('sonatypeUser')
+            password = findProperty('sonatypePassword')
+            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+        }
+    }
+}
+
+// Required signing properties for release: signing.keyId, signing.password and signing.secretKeyRingFile
+// (https://docs.gradle.org/current/userguide/signing_plugin.html#sec:signatory_credentials)
+
+release.git.requireBranch.set('main')
+
+// release manages only root project (subprojects will be checked and released implicitly)
+afterReleaseBuild {
+    dependsOn 'publishToSonatype'
+    dependsOn subprojects.collect { ":$it.name:publishToSonatype" }
+    dependsOn 'closeAndReleaseSonatypeStagingRepository'
+    doLast {
+        logger.warn "RELEASED $project.group:$project.name:$project.version"
     }
 }
