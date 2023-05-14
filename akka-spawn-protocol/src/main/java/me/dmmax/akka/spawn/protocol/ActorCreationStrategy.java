@@ -25,20 +25,28 @@ public interface ActorCreationStrategy {
 
   /**
    * Creates an actor with an anonymous name.
+   *
+   * @return - anonymous actor creation strategy
    */
   static ActorCreationStrategy anonymous() {
     return new AnnonymousActorCreationStrategy();
   }
 
   /**
-   * Creates an actor with a unique suffix using {@link UUID}.
+   * Creates an actor with a unique suffix using {@link UUID} and a name prefix.
+   *
+   * @param namePrefix - name prefix which will be used for the actor name
+   * @return - unique actor creation strategy
    */
   static ActorCreationStrategy unique(String namePrefix) {
     return new UniqueNameActorCreationStrategy(namePrefix);
   }
 
   /**
-   * Creates an actor with a sequential suffix.
+   * Creates an actor with a sequential suffix and defined prefix.
+   *
+   * @param namePrefix - name prefix which will be used for the actor name
+   * @return - sequential actor creation strategy
    */
   static ActorCreationStrategy sequence(String namePrefix) {
     return new SequenceNameActorCreationStrategy(namePrefix);
@@ -62,7 +70,7 @@ public interface ActorCreationStrategy {
 
     private final String namePrefix;
 
-    public UniqueNameActorCreationStrategy(String namePrefix) {
+    private UniqueNameActorCreationStrategy(String namePrefix) {
       this.namePrefix = namePrefix;
     }
 
@@ -83,7 +91,7 @@ public interface ActorCreationStrategy {
 
     private final String namePrefix;
 
-    public SequenceNameActorCreationStrategy(String namePrefix) {
+    private SequenceNameActorCreationStrategy(String namePrefix) {
       this.namePrefix = namePrefix;
     }
 
