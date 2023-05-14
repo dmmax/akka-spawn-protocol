@@ -116,6 +116,12 @@ subprojects {
         pom.removeDependencyManagement()
     }
 
+    jar {
+        manifest {
+            attributes 'Built-By': 'dmmax'
+        }
+    }
+
     test {
         maxHeapSize = '512m'
     }
@@ -153,7 +159,6 @@ nexusPublishing {
 
 // Required signing properties for release: signing.keyId, signing.password and signing.secretKeyRingFile
 // (https://docs.gradle.org/current/userguide/signing_plugin.html#sec:signatory_credentials)
-
 release.git.requireBranch.set('main')
 
 // release manages only root project (subprojects will be checked and released implicitly)
