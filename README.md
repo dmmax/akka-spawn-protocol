@@ -62,9 +62,9 @@ In addition, you need to handle the wrapper message inside the spawner actor
 
 ```java
 private <CHILD> Behavior<Command> onSpawnActor(SpawnActorCommandWrapper<CHILD> wrapper) {
-  SpawnProtocols.spawnChildActor(getContext(), wrapper.spawnActorCommand());
+    SpawnProtocols.spawnChildActor(getContext(), wrapper.spawnActorCommand());
     return this;
-    }
+}
 ```
 
 Now, it is pssible to create child actors using the SpawnProtocol
