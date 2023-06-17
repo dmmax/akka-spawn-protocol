@@ -183,8 +183,8 @@ check.dependsOn subprojects.check
 
 sonar {
     properties {
-        property("sonar.projectKey", "dmmax")
-        property("sonar.organization", "dmmax_akka-spawn-protocol")
+        property("sonar.projectKey", "dmmax_akka-spawn-protocol")
+        property("sonar.organization", "dmax")
         property("sonar.host.url", "https://sonarcloud.io")
         // will analyse all modules for java code only
         property("sonar.sources", "*/src/main/java/**/*.java")
