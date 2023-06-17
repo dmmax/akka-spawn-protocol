@@ -2,7 +2,7 @@ on:
   # Trigger analysis when pushing in master or pull requests
   push:
     branches:
-      - master
+      - main
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
