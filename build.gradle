@@ -7,6 +7,7 @@ plugins {
     id 'java-platform'
     id 'net.researchgate.release' version '3.0.2'
     id 'ru.vyarus.java-lib' version '2.4.0'
+    id "org.sonarqube" version "4.0.0.2929"
 }
 
 wrapper {
@@ -17,6 +18,11 @@ description = 'Using Spawn Protocol for Akka Actors in any nested level of actor
 
 ext {
     akka = '2.6.20'
+}
+
+javaLib {
+    // aggregated test and coverage reports
+    aggregateReports()
 }
 
 // root project is a BOM
@@ -46,6 +52,7 @@ allprojects {
     apply plugin: 'ru.vyarus.github-info'
     apply plugin: 'ru.vyarus.java-lib'
     apply plugin: 'signing'
+    apply plugin: 'jacoco'
 
     repositories {
         mavenLocal()
@@ -80,7 +87,6 @@ allprojects {
 
 subprojects {
     apply plugin: 'java'
-    apply plugin: 'jacoco'
     apply plugin: 'org.cyclonedx.bom'
 
     sourceCompatibility = 8
@@ -123,6 +129,7 @@ subprojects {
     }
 
     test {
+        useJUnitPlatform()
         maxHeapSize = '512m'
     }
 
@@ -168,5 +175,19 @@ afterReleaseBuild {
     dependsOn 'closeAndReleaseSonatypeStagingRepository'
     doLast {
         logger.warn "RELEASED $project.group:$project.name:$project.version"
+    }
+}
+
+// Require subprojects to execute check before root project
+check.dependsOn subprojects.check
+
+sonar {
+    properties {
+        property("sonar.projectKey", "dmmax_akka-spawn-protocol")
+        property("sonar.organization", "dmmax")
+        property("sonar.host.url", "https://sonarcloud.io")
+        // will analyse all modules for java code only
+        property("sonar.sources", "*/src/main/java/**/*.java")
+        property("sonar.coverage.jacoco.xmlReportPaths", "${buildDir}/reports/jacoco/test/jacocoTestReport.xml")
     }
 }
