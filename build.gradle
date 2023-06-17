@@ -7,7 +7,7 @@ plugins {
     id 'java-platform'
     id 'net.researchgate.release' version '3.0.2'
     id 'ru.vyarus.java-lib' version '2.4.0'
-    id 'org.sonarqube' version '4.0.0.2929'
+    id "org.sonarqube" version "4.2.1.3168"
 }
 
 wrapper {
@@ -188,5 +188,6 @@ sonar {
         property("sonar.host.url", "https://sonarcloud.io")
         // will analyse all modules for java code only
         property("sonar.sources", "*/src/main/java/**/*.java")
+        property("sonar.coverage.jacoco.xmlReportPaths", "${rootDir}/build/reports/jacoco/test/jacocoTestReport.xml")
     }
 }
