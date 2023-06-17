@@ -1,6 +1,9 @@
 # Akka Spawn Protocol
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](http://www.opensource.org/licenses/MIT)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=dmmax_akka-spawn-protocol&metric=coverage)](https://sonarcloud.io/summary/new_code?id=dmmax_akka-spawn-protocol)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=dmmax_akka-spawn-protocol&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=dmmax_akka-spawn-protocol)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=dmmax_akka-spawn-protocol&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=dmmax_akka-spawn-protocol)
 
 Uses Spawn Protocol to create [Akka](http://akka.io/)'s Actors from outside. It can be applied at any level of the actors' hierarchy.
 
