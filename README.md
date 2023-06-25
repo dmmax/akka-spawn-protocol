@@ -17,7 +17,7 @@ actor could be a spawner if the actor implements a method to spawn the child act
 ```groovy
 dependencies {
     implementation(
-            'me.dmmax.akka:akka-spawn-protocol:1.0'
+            'me.dmmax.akka:akka-spawn-protocol:1.1'
     )
     // ... other dependencies
 }
@@ -30,7 +30,7 @@ in one place
 
 ```groovy
 dependencies {
-    implementation platform('me.dmmax.akka:akka-spawn-protocol-bom:1.0')
+    implementation platform('me.dmmax.akka:akka-spawn-protocol-bom:1.1')
     // Don't need to specify the version for root and extensions
     implementation 'me.dmmax.akka:akka-spawn-protocol'
     implementation 'me.dmmax.akka:akka-spawn-protocol-guice'

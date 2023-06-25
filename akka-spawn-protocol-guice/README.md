@@ -7,7 +7,7 @@
 ```groovy
 dependencies {
     implementation(
-            'me.dmmax.akka:akka-spawn-protocol:1.0'
+            'me.dmmax.akka:akka-spawn-protocol:1.1'
     )
     // ... other dependencies
 }
