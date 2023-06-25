@@ -2,6 +2,6 @@ description = 'Guice integration for Akka Spawn Protocol'
 
 dependencies {
     implementation(
-            "com.google.inject:guice:5.0.1"
+            "com.google.inject:guice:6.0.0"
     )
 }
